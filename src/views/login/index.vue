@@ -18,7 +18,19 @@
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
-          <el-input :key="passwordType" ref="password" v-model="loginForm.password" :type="passwordType" placeholder="Password" name="password" tabindex="2" autocomplete="on" @keyup.native="checkCapslock" @blur="capsTooltip = false" @keyup.enter.native="handleLogin" />
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="Password"
+            name="password"
+            tabindex="2"
+            autocomplete="on"
+            @keyup.native="checkCapslock"
+            @blur="capsTooltip = false"
+            @keyup.enter.native="handleLogin"
+          />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
@@ -56,13 +68,12 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import SocialSign from './components/SocialSignin'
-import axios from 'axios'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { setToken } from '@/utils/auth'
 
 export default {
   name: 'Login',
   components: { SocialSign },
-  data () {
+  data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
         callback(new Error('Please enter the correct user name'))
@@ -96,7 +107,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler: function(route) {
         const query = route.query
         if (query) {
           this.redirect = query.redirect
@@ -106,21 +117,21 @@ export default {
       immediate: true
     }
   },
-  created () {
+  created() {
     // window.addEventListener('storage', this.afterQRScan)
   },
-  mounted () {
+  mounted() {
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
   },
-  destroyed () {
+  destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
-    checkCapslock ({ shiftKey, key } = {}) {
+    checkCapslock({ shiftKey, key } = {}) {
       if (key && key.length === 1) {
         if (shiftKey && (key >= 'a' && key <= 'z') || !shiftKey && (key >= 'A' && key <= 'Z')) {
           this.capsTooltip = true
@@ -132,7 +143,7 @@ export default {
         this.capsTooltip = false
       }
     },
-    showPwd () {
+    showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
       } else {
@@ -142,35 +153,20 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin () {
+    handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          // this.$http({
-          //    url:this.$http.adornUrl('/login'),
-          //    method:"POST",
-          //    data:{
-          //       'username': 'admin',
-          //       'password': '123456' ,
-          //       'grant_type':'password' 
-          //    },headers:{
-          //      'Content-Type':'application/x-www-form-urlencoded'
-          //    },auth:{
-          //      username:'order',
-          //      password:'secret'
-          //    }
-          //    }).then(({ data }) => {
-          // });
-
           this.$http({
             url: '/yun-accounts-api/auth/login',
             method: 'post',
-            data: { body: { userName: '哈哈', password: '1' } }
+            data: { body: { userName: '哈哈', password: '1' }}
           }).then(res => {
-            console.log('token', res);
-            this.$store.commit('SET_TOKEN', res.body)
+            console.log('token', res)
+            window.sessionStorage.setItem('token', res.body.accessToken)
+            this.$store.commit('SET_TOKEN', res.body.accessToken)
             setToken(res.body)
-            console.log('token--:', res);
+            console.log('token--:', res)
             this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
             this.loading = false
           })
@@ -189,7 +185,7 @@ export default {
         }
       })
     },
-    getOtherQuery (query) {
+    getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
         if (cur !== 'redirect') {
           acc[cur] = query[cur]

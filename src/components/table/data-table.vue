@@ -25,8 +25,8 @@
       <template v-if="columnDatas.noSum">
         <el-table-column
           v-for="(item,index) in columnDatas.columns"
-          v-if="!item.render && (item.hasApproval ? isOpenApproval : true)"
           :key="index"
+          :v-if="!item.render && (item.hasApproval ? isOpenApproval : true)"
           :align="item.align"
           :label="item.label"
           :width="item.width"
@@ -35,11 +35,11 @@
         >
           <span v-if="!item.children && !item.slot" slot-scope="scope">{{ scope.row[item.prop] }}</span>
           <slot v-if="!item.children && item.slot" :name="item.slot" />
-          <el-table-column v-for="(citem,cindex) in item.children" v-if="item.children" :key="cindex" :align="citem.align" :label="citem.label" :width="citem.width" :fixed="citem.fixed" :show-overflow-tooltip="item.showOverflowTooltip? item.showOverflowTooltip : showOverflowTooltip">
+          <el-table-column v-for="(citem,cindex) in item.children" :key="cindex" :v-if="item.children" :align="citem.align" :label="citem.label" :width="citem.width" :fixed="citem.fixed" :show-overflow-tooltip="item.showOverflowTooltip? item.showOverflowTooltip : showOverflowTooltip">
             <span slot-scope="scope">{{ scope.row[citem.prop] }}</span>
           </el-table-column>
         </el-table-column>
-        <el-table-column v-else-if="item.render && (item.hasApproval ? isOpenApproval : true)" :key="index" :label="item.label" :width="item.width" :fixed="item.fixed" :align="item.align">
+        <el-table-column :key="index" :v-else-if="item.render && (item.hasApproval ? isOpenApproval : true)" :label="item.label" :width="item.width" :fixed="item.fixed" :align="item.align">
           <template slot-scope="scope">
             <table-cell :row="scope.row" :index="scope.$index" :render="item.render" />
           </template>
@@ -47,7 +47,7 @@
       </template>
       <!-- 有求和的情况 -->
       <template v-if="!columnDatas.noSum">
-        <el-table-column v-for="(item,index) in columnDatas.columns" v-if="!item.render && !item.hidden" :key="index" :label="item.label" :width="item.width" :fixed="item.fixed">
+        <el-table-column v-for="(item,index) in columnDatas.columns" :key="index" :v-if="!item.render && !item.hidden" :label="item.label" :width="item.width" :fixed="item.fixed">
           <el-table-column
             v-if="!item.children"
             :width="item.width"
@@ -57,13 +57,13 @@
           >
             <span slot-scope="scope">{{ scope.row[item.prop] }}</span>
           </el-table-column>
-          <el-table-column v-for="(citem,cindex) in item.children" v-if="item.children" :key="cindex" :label="citem.label" :width="citem.width" :fixed="citem.fixed">
+          <el-table-column v-for="(citem,cindex) in item.children" :key="cindex" :v-if="item.children" :label="citem.label" :width="citem.width" :fixed="citem.fixed">
             <el-table-column v-if="!citem.children" :width="item.width" :label="citem.sumprop && sumsData[citem.sumprop] ? sumsData[citem.sumprop]+'' : ''" :class-name="citem.sumprop ? 'hassum' : ''" :show-overflow-tooltip="item.showOverflowTooltip? item.showOverflowTooltip : showOverflowTooltip">
               <span slot-scope="scope">{{ scope.row[citem.prop] }}</span>
             </el-table-column>
           </el-table-column>
         </el-table-column>
-        <el-table-column v-else-if="item.render && !item.hidden" :key="index" :label="item.label" :width="item.width" :fixed="item.fixed">
+        <el-table-column :key="index" :v-else-if="item.render && !item.hidden" :label="item.label" :width="item.width" :fixed="item.fixed">
           <el-table-column
             v-if="!item.children"
             :width="item.width"
@@ -222,7 +222,7 @@ export default {
       }
       this.$set(
         this.tableData,
-        _.pullAll(this.tableData, this.checkboxData, this.onlyId)
+        // _.pullAll(this.tableData, this.checkboxData, this.onlyId)
       )
     },
     // 设置选中行

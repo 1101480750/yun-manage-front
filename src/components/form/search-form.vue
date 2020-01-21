@@ -6,7 +6,7 @@
         <!-- <el-button @click="doExport" type="primary">导出Excel</el-button> -->
       </div>
 
-      <el-form-item v-for="m in ruleFormRow" v-if="(m.hasApproval ? isOpenApproval : true)" :key="m.prop" :label="m.label" :prop="m.prop" size="mini" :class="m.type === 'datetimerange' ? 'time-size':'default-form'">
+      <el-form-item v-for="m in ruleFormRow" :key="m.prop" :v-if="(m.hasApproval ? isOpenApproval : true)" :label="m.label" :prop="m.prop" size="mini" :class="m.type === 'datetimerange' ? 'time-size':'default-form'">
         <el-input v-if="m.type==='input'" v-model="ruleFormData[m.prop]" :clearable="true" :placeholder="m.placeholder" :disabled="m.disabled" :readonly="m.readonly" />
         <slot v-if="m.slot" :name="m.slot" />
 
@@ -68,8 +68,6 @@
 </template>
 
 <script>
-import { rename } from 'fs'
-import { defaultCoreCipherList } from 'constants'
 export default {
   name: 'SearchForm',
   props: {
@@ -236,16 +234,12 @@ div.main-form {
     float: left;
   }
   .search-ruleForm {
-    // border-top: 1px solid #dadada;
     padding-top: 0px;
     .default-form {
       width: 325px;
       margin-right: 0px;
       height: 30px;
     }
-    // .default-form:nth-child(5n) {
-    //   margin-right: 0px;
-    // }
     .time-size {
       width: 500px;
     }

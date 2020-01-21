@@ -7,27 +7,39 @@
       <template slot="pages" />
     </dataTable>
     <div class="paginationCont">
-      <el-pagination background :page-sizes="[20, 30, 40, 50, 60]" layout="total, prev, pager, next, sizes" :pager-count="5" :page-size.sync="ruleFormData.rows" :current-page.sync="ruleFormData.page" :total="totalCount" @size-change="pageSizeChange" @current-change="doSearch()" />
+      <el-pagination background :page-sizes="[20, 30, 40, 50, 60]" layout="total, prev, pager, next, sizes" :pager-count="5" :page-size.sync="ruleFormData.rows" :current-page.sync="ruleFormData.page" :total="totalCount" @size-change="pageSizeChange" />
     </div>
+
+    <el-dialog :title="isEdit ? '编辑结入结出条目' : '新增结入结出条目'" :visible.sync="isShow" class="add-dialog" label-width="180px" width="700px" :close-on-click-modal="false" :destroy-on-close="true" @beforeClose="closeRule">
+      <div class="in-out-dialog">
+        <addForm ref="baseForm" :rule-form-row="ruleAddFormRow" :rules="rules" :rule-form-data="ruleAddFormData" />
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="isShow = false">取 消</el-button>
+        <el-button type="primary" size="mini" @click="insertRuleGroup">确 定
+        </el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import searchForm from '@/components/form/search-form.vue'
 import dataTable from '@/components/table/data-table.vue'
+import addForm from '@/components/form/add-form.vue'
 export default {
   name: 'UsersInfo',
   data() {
     return {
-      permissions: JSON.parse(sessionStorage.getItem('permissions') || '[]'),
       loadingTable: false,
       pageLoading: false,
+      isShow: true, // 弹窗打开标志
       tableData: [],
       totalCount: 0,
       // 查询组件值对象，与ruleFormRow中每一对象的prop一一对应
       ruleFormData: {
         page: 1,
         rows: 20,
-        operatorNo: '',
+        userName: '254',
         operatorName: '',
         startTime: null,
         endTime: null
@@ -35,8 +47,8 @@ export default {
       // 查询组件key对象,使用方法参照二类单据页
       ruleFormRow: [
         {
-          label: '操作员名称:',
-          placeholder: '操作员名称',
+          label: '用户姓名:',
+          placeholder: '用户姓名',
           prop: 'operatorName',
           type: 'input'
         },
@@ -64,8 +76,8 @@ export default {
         },
         columns: [
           {
-            label: '操作功能',
-            prop: 'operation'
+            label: '用户姓名',
+            prop: 'userName'
           },
           {
             label: '操作人',
@@ -76,14 +88,22 @@ export default {
             prop: 'createTime'
           }
         ]
-      }
+      },
+      rules: [],
+      ruleAddFormRow: [{
+        label: '名称:',
+        placeholder: '名称',
+        prop: 'itemsName',
+        type: 'input'
+      }]
     }
   },
   // 组件引入
   // eslint-disable-next-line vue/order-in-components
   components: {
     searchForm,
-    dataTable
+    dataTable,
+    addForm
   },
   computed: {},
   mounted() {
@@ -114,6 +134,17 @@ export default {
     },
     // 数据查询
     doSearch() {
+      // this.$cookie.get('token', res.body.accessToken)
+      console.log('token', window.sessionStorage.getItem('token'))
+      this.$http({
+        url: '/yun-member-api/users/listUsers',
+        method: 'post',
+        data: { body: { ...this.ruleFormData }}
+      }).then(res => {
+        console.log('res', res)
+        this.tableData = res.body.rows
+        this.totalCount = res.body.total
+      })
     }
   }
 }

@@ -27,7 +27,8 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: false,
+  // lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -45,7 +46,14 @@ module.exports = {
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
-      }
+      }, 
+      "/yun-member-api": {
+        target: "http://127.0.0.1:40254",
+        pathRewrite: {
+          ['^' + 'yun-member-api']: '/'
+        },
+        changeOrigin: true
+      },
     },
     after: require('./mock/mock-server.js')
   },
